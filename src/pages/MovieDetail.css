@@ -1,0 +1,87 @@
+.movie-detail {
+  max-width: 800px; /* Độ rộng tối đa của khung chi tiết */
+  margin: 20px auto; /* Căn giữa */
+  background-color: #222; /* Màu nền */
+  padding: 30px; /* Khoảng cách bên trong */
+  border-radius: 10px; /* Bo góc */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Hiệu ứng đổ bóng */
+  color: #fff; /* Màu chữ mặc định */
+}
+
+.movie-detail img {
+  max-width: 100%; /* Giới hạn chiều rộng tối đa */
+  max-height: 300px; /* Giới hạn chiều cao tối đa */
+  object-fit: cover; /* Giữ tỷ lệ ảnh và cắt bớt nếu cần */
+  margin: 20px auto; /* Căn giữa ảnh */
+  display: block; /* Hiển thị ảnh */
+  border-radius: 10px; /* Bo góc cho ảnh */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Hiệu ứng đổ bóng */
+}
+
+.movie-detail iframe,
+.movie-detail video {
+  width: 100%; /* Video chiếm toàn bộ chiều rộng khung */
+  height: 400px; /* Đặt chiều cao cố định */
+  border-radius: 10px; /* Bo góc cho video */
+  border: none; /* Loại bỏ viền */
+}
+
+.movie-detail h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.movie-detail p {
+  text-align: center;
+  font-size: 1rem;
+  margin: 10px 0;
+}
+
+/* Nút Like */
+.movie-detail .btn-like {
+  background-color: #ff6600; /* Màu nền cam */
+  color: white; /* Màu chữ */
+  padding: 12px 24px; /* Khoảng cách bên trong */
+  border: none; /* Loại bỏ viền */
+  border-radius: 30px; /* Bo góc cho nút */
+  cursor: pointer; /* Con trỏ chuột khi hover */
+  display: flex; /* Sử dụng Flexbox */
+  align-items: center; /* Căn giữa nội dung */
+  justify-content: center; /* Căn giữa nội dung */
+  font-size: 1.1rem;
+  margin: 20px auto; /* Căn giữa */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng hover */
+}
+
+.movie-detail .btn-like:hover {
+  background-color: #ff4500; /* Màu nền khi hover */
+  transform: scale(1.05); /* Phóng to nhẹ khi hover */
+}
+
+/* Rating sao */
+.movie-detail .movie-rating {
+  margin: 30px 0; /* Khoảng cách trên và dưới */
+  text-align: center; /* Căn giữa */
+}
+
+.movie-detail .movie-rating span {
+  font-size: 30px; /* Kích thước sao */
+  cursor: pointer; /* Con trỏ chuột khi hover */
+  margin: 0 8px; /* Khoảng cách giữa các sao */
+  transition: color 0.3s ease; /* Hiệu ứng chuyển màu khi hover */
+}
+
+.movie-detail .movie-rating span.filled {
+  color: #ffbf00; /* Màu vàng khi đã được đánh giá */
+}
+
+.movie-detail .movie-rating span:hover {
+  color: #ffd700; /* Màu vàng khi hover */
+}
+
+.movie-detail .movie-rating p {
+  color: #fff; /* Màu chữ */
+  font-size: 1.2rem; /* Kích thước chữ */
+  margin-top: 10px; /* Khoảng cách từ các sao đến chữ */
+}

@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import ImageSlider from "./components/ImageSlider";
+import MovieDetail from "./pages/MovieDetail";
+import MovieListPage from "./pages/MovieListPage";
+import AuthForm from "./components/AuthForm";
+import Footer from "./components/Footer";
+import AdminPage from "./pages/AdminPage";
+import "./assets/styles.css";
 
-function App() {
+const App = () => {
+  // State để lưu thông tin người dùng đã đăng nhập
+  const [loggedInUser, setLoggedInUser] = useState(null);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      {/* Truyền thông tin người dùng đã đăng nhập xuống Navbar */}
+      <Navbar loggedInUser={loggedInUser} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/imageSlider" element={<ImageSlider />} />
+        <Route
+          path="/authform"
+          element={<AuthForm setLoggedInUser={setLoggedInUser} />}
+        />
+        <Route path="/movies" element={<MovieListPage />} />
+        <Route path="/movies/:genre" element={<MovieListPage />} />
+        <Route path="/movie/:id" element={<MovieDetail />} />
+        {/* Truyền loggedInUser vào AdminPage */}
+        <Route path="/admin" element={<AdminPage loggedInUser={loggedInUser} />} />
+      </Routes>
+      <Footer />
+    </Router>
   );
-}
+};
 
 export default App;
