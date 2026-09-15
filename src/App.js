@@ -16,8 +16,8 @@ const App = () => {
 
   return (
     <Router>
-      {/* Truyền thông tin người dùng đã đăng nhập xuống Navbar */}
-      <Navbar loggedInUser={loggedInUser} />
+      {/* Truyền cả loggedInUser và setLoggedInUser xuống Navbar */}
+      <Navbar loggedInUser={loggedInUser} setLoggedInUser={setLoggedInUser} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/imageSlider" element={<ImageSlider />} />
