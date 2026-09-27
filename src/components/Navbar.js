@@ -24,11 +24,23 @@ const Navbar = ({ loggedInUser, setLoggedInUser }) => {
 
         {/* Genre Links Centered */}
         <div className="navbar-links">
-          <Link to="/movies">Movies</Link>
-          <Link to="/movies/action">Action</Link>
-          <Link to="/movies/sci-fi">Sci-Fi</Link>
-          <Link to="/movies/animation">Animation</Link>
-          <Link to="/movies/romance">Romance</Link>
+          {loggedInUser?.isAdmin ? (
+            <>
+              <Link to="/admin">Movies</Link>
+              <Link to="/admin/action">Action</Link>
+              <Link to="/admin/sci-fi">Sci-Fi</Link>
+              <Link to="/admin/animation">Animation</Link>
+              <Link to="/admin/romance">Romance</Link>
+            </>
+          ) : (
+            <>
+              <Link to="/movies">Movies</Link>
+              <Link to="/movies/action">Action</Link>
+              <Link to="/movies/sci-fi">Sci-Fi</Link>
+              <Link to="/movies/animation">Animation</Link>
+              <Link to="/movies/romance">Romance</Link>
+            </>
+          )}
         </div>
 
         {/* User Info or Sign Up Button */}

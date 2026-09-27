@@ -30,6 +30,7 @@ const App = () => {
         <Route path="/movie/:id" element={<MovieDetail />} />
         {/* Truyền loggedInUser vào AdminPage */}
         <Route path="/admin" element={<AdminPage loggedInUser={loggedInUser} />} />
+        <Route path="/admin/:genre" element={<AdminPage loggedInUser={loggedInUser} />} />
       </Routes>
       <Footer />
     </Router>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import MovieList from "../components/MovieList";
 import moviesData from "../data/moviesData"; 
 
@@ -70,6 +71,8 @@ const AdminPage = ({ loggedInUser }) => {
     });
   };
 
+  const { genre } = useParams();
+
   const handleUpdateMovie = () => {
     if (
       !newMovie.title ||
@@ -98,6 +101,10 @@ const AdminPage = ({ loggedInUser }) => {
     });
     setEditMovie(null);
   };
+
+  const filteredMovies = genre
+    ? movies.filter((movie) => movie.genre.toLowerCase() === genre.toLowerCase())
+    : movies;
 
   return (
     <div>
@@ -162,7 +169,7 @@ const AdminPage = ({ loggedInUser }) => {
 
       {/* Sử dụng MovieList để hiển thị danh sách phim và thêm các sự kiện onEdit, onDelete */}
       <MovieList
-        movies={movies}
+        movies={filteredMovies}
         onEdit={handleEditMovie}
         onDelete={handleDeleteMovie}
         isAdmin={loggedInUser?.isAdmin} // Truyền giá trị isAdmin từ loggedInUser

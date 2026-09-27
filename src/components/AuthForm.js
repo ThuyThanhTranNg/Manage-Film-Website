@@ -59,7 +59,7 @@ const AuthForm = ({ setLoggedInUser }) => {
 
       if (user) {
         alert(`Đăng nhập thành công! Chào mừng ${user.username}`);
-        setLoggedInUser(user); 
+        setLoggedInUser(user);
         setLoggedInUserState(user);
       } else {
         alert("Sai email hoặc mật khẩu. Vui lòng thử lại.");
