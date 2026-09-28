@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate } from "react-router-dom"; // Điều hướng sau khi đăng nhập
+import { useNavigate } from "react-router-dom"; 
 
 // Validation schemas
 const loginSchema = Yup.object().shape({
@@ -26,7 +26,7 @@ const registerSchema = Yup.object().shape({
 const AuthForm = ({ setLoggedInUser }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [loggedInUser, setLoggedInUserState] = useState(null);
-  const navigate = useNavigate(); // Sử dụng điều hướng
+  const navigate = useNavigate();
 
   const formSchema = isLogin ? loginSchema : registerSchema;
   const {
@@ -38,43 +38,49 @@ const AuthForm = ({ setLoggedInUser }) => {
     mode: "onBlur",
   });
 
-  const onSubmit = (data) => {
-    // Kiểm tra tài khoản admin
-    if (isLogin && data.email === "admin123@gmail.com" && data.password === "admin123") {
-      alert("Đăng nhập thành công với tư cách Admin!");
-      const adminUser = { username: "Admin", email: data.email, isAdmin: true };
-      setLoggedInUser(adminUser); // Cập nhật trạng thái người dùng đăng nhập
-      setLoggedInUserState(adminUser);
-      navigate("/admin"); // Điều hướng đến trang admin
-      return;
-    }
+  const onSubmit = async (data) => {
+    try {
+      if (isLogin) {
+        // GỌI API ĐĂNG NHẬP
+        const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080/api"}/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: data.email, password: data.password }),
+        });
 
-    // Xử lý người dùng thông thường
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+        const result = await response.json();
 
-    if (isLogin) {
-      const user = users.find(
-        (user) => user.email === data.email && user.password === data.password
-      );
-
-      if (user) {
-        alert(`Đăng nhập thành công! Chào mừng ${user.username}`);
-        setLoggedInUser(user); 
-        setLoggedInUserState(user);
+        if (response.ok) {
+          alert(result.user.isAdmin ? "Đăng nhập thành công với tư cách Admin!" : `Đăng nhập thành công! Chào mừng ${result.user.username}`);
+          setLoggedInUser(result.user);
+          setLoggedInUserState(result.user);
+          
+          if (result.user.isAdmin) {
+            navigate("/admin");
+          }
+        } else {
+          alert(result.message || "Sai email hoặc mật khẩu. Vui lòng thử lại.");
+        }
       } else {
-        alert("Sai email hoặc mật khẩu. Vui lòng thử lại.");
-      }
-    } else {
-      const isUserExist = users.some((user) => user.email === data.email);
+        // GỌI API ĐĂNG KÝ
+        const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080/api"}/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
 
-      if (isUserExist) {
-        alert("Email đã được đăng ký. Vui lòng sử dụng email khác.");
-      } else {
-        users.push(data);
-        localStorage.setItem("users", JSON.stringify(users));
-        alert("Đăng ký thành công! Bây giờ bạn có thể đăng nhập.");
-        setIsLogin(true);
+        const result = await response.json();
+
+        if (response.ok) {
+          alert("Đăng ký thành công! Bây giờ bạn có thể đăng nhập.");
+          setIsLogin(true);
+        } else {
+          alert(result.message || "Đăng ký thất bại.");
+        }
       }
+    } catch (error) {
+      alert("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại Backend.");
+      console.error(error);
     }
   };
 

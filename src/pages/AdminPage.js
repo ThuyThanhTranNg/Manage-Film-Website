@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import MovieList from "../components/MovieList";
-import moviesData from "../data/moviesData"; 
+import { getMovies, addMovie, updateMovie, deleteMovie } from "../services/movieService";
 
 const AdminPage = ({ loggedInUser }) => {
   const [movies, setMovies] = useState([]);
@@ -14,16 +15,23 @@ const AdminPage = ({ loggedInUser }) => {
     subtitleUrl: "",
   });
   const [editMovie, setEditMovie] = useState(null);
+  const { genre } = useParams();
 
+  // Load danh sách phim từ Backend
   useEffect(() => {
-    setMovies(moviesData);
+    fetchMovies();
   }, []);
 
-  const saveMoviesToLocalStorage = (movies) => {
-    localStorage.setItem("movies", JSON.stringify(movies));
+  const fetchMovies = async () => {
+    try {
+      const data = await getMovies();
+      setMovies(data);
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách phim:", error);
+    }
   };
 
-  const handleAddMovie = () => {
+  const handleAddMovie = async () => {
     if (
       !newMovie.title ||
       !newMovie.genre ||
@@ -35,26 +43,29 @@ const AdminPage = ({ loggedInUser }) => {
       alert("Vui lòng điền đầy đủ thông tin phim.");
       return;
     }
-    const newId = movies.length + 1;
-    const newMovieData = { id: newId, ...newMovie };
-    const updatedMovies = [...movies, newMovieData];
-    setMovies(updatedMovies);
-    saveMoviesToLocalStorage(updatedMovies);
-    setNewMovie({
-      title: "",
-      genre: "",
-      description: "",
-      releaseDate: "",
-      image: "",
-      videoUrl: "",
-      subtitleUrl: "",
-    });
+    try {
+      await addMovie(newMovie);
+      fetchMovies(); // Load lại danh sách sau khi thêm
+      setNewMovie({
+        title: "", genre: "", description: "", releaseDate: "",
+        image: "", videoUrl: "", subtitleUrl: "",
+      });
+      alert("Thêm phim thành công!");
+    } catch (error) {
+      alert("Lỗi khi thêm phim.");
+    }
   };
 
-  const handleDeleteMovie = (id) => {
-    const updatedMovies = movies.filter((movie) => movie.id !== id);
-    setMovies(updatedMovies);
-    saveMoviesToLocalStorage(updatedMovies);
+  const handleDeleteMovie = async (id) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa phim này không?")) {
+      try {
+        await deleteMovie(id);
+        fetchMovies(); // Load lại danh sách
+        alert("Xóa thành công!");
+      } catch (error) {
+        alert("Lỗi khi xóa phim.");
+      }
+    }
   };
 
   const handleEditMovie = (movie) => {
@@ -70,40 +81,34 @@ const AdminPage = ({ loggedInUser }) => {
     });
   };
 
-  const handleUpdateMovie = () => {
-    if (
-      !newMovie.title ||
-      !newMovie.genre ||
-      !newMovie.description ||
-      !newMovie.releaseDate ||
-      !newMovie.image ||
-      !newMovie.videoUrl
-    ) {
+  const handleUpdateMovie = async () => {
+    if (!newMovie.title || !newMovie.genre || !newMovie.description || !newMovie.releaseDate || !newMovie.image || !newMovie.videoUrl) {
       alert("Vui lòng điền đầy đủ thông tin.");
       return;
     }
-    const updatedMovies = movies.map((movie) =>
-      movie.id === editMovie.id ? { ...movie, ...newMovie } : movie
-    );
-    setMovies(updatedMovies);
-    saveMoviesToLocalStorage(updatedMovies);
-    setNewMovie({
-      title: "",
-      genre: "",
-      description: "",
-      releaseDate: "",
-      image: "",
-      videoUrl: "",
-      subtitleUrl: "",
-    });
-    setEditMovie(null);
+    try {
+      await updateMovie({ id: editMovie.id, ...newMovie });
+      fetchMovies();
+      setNewMovie({
+        title: "", genre: "", description: "", releaseDate: "",
+        image: "", videoUrl: "", subtitleUrl: "",
+      });
+      setEditMovie(null);
+      alert("Cập nhật thành công!");
+    } catch (error) {
+      alert("Lỗi khi cập nhật.");
+    }
   };
+
+  const filteredMovies = genre
+    ? movies.filter((movie) => movie.genre.toLowerCase() === genre.toLowerCase())
+    : movies;
 
   return (
     <div>
       <h1>Quản lý phim</h1>
       <div>
-        <h2>Thêm phim mới</h2>
+        <h2>{editMovie ? "Cập nhật phim" : "Thêm phim mới"}</h2>
         <input
           type="text"
           placeholder="Tiêu đề phim"
@@ -119,17 +124,13 @@ const AdminPage = ({ loggedInUser }) => {
         <textarea
           placeholder="Mô tả"
           value={newMovie.description}
-          onChange={(e) =>
-            setNewMovie({ ...newMovie, description: e.target.value })
-          }
+          onChange={(e) => setNewMovie({ ...newMovie, description: e.target.value })}
         />
         <input
           type="text"
           placeholder="Ngày phát hành"
           value={newMovie.releaseDate}
-          onChange={(e) =>
-            setNewMovie({ ...newMovie, releaseDate: e.target.value })
-          }
+          onChange={(e) => setNewMovie({ ...newMovie, releaseDate: e.target.value })}
         />
         <input
           type="text"
@@ -141,17 +142,13 @@ const AdminPage = ({ loggedInUser }) => {
           type="text"
           placeholder="URL video"
           value={newMovie.videoUrl}
-          onChange={(e) =>
-            setNewMovie({ ...newMovie, videoUrl: e.target.value })
-          }
+          onChange={(e) => setNewMovie({ ...newMovie, videoUrl: e.target.value })}
         />
         <input
           type="text"
           placeholder="URL phụ đề"
           value={newMovie.subtitleUrl}
-          onChange={(e) =>
-            setNewMovie({ ...newMovie, subtitleUrl: e.target.value })
-          }
+          onChange={(e) => setNewMovie({ ...newMovie, subtitleUrl: e.target.value })}
         />
         {editMovie ? (
           <button onClick={handleUpdateMovie}>Cập nhật phim</button>
@@ -160,12 +157,11 @@ const AdminPage = ({ loggedInUser }) => {
         )}
       </div>
 
-      {/* Sử dụng MovieList để hiển thị danh sách phim và thêm các sự kiện onEdit, onDelete */}
       <MovieList
-        movies={movies}
+        movies={filteredMovies}
         onEdit={handleEditMovie}
         onDelete={handleDeleteMovie}
-        isAdmin={loggedInUser?.isAdmin} // Truyền giá trị isAdmin từ loggedInUser
+        isAdmin={loggedInUser?.isAdmin} 
       />
     </div>
   );

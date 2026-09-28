@@ -1,19 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import moviesData from "../data/moviesData"; // Import dữ liệu phim từ file riêng
+import { getMovie, updateMovie } from "../services/movieService";
 import "./MovieDetail.css";
 
 const MovieDetail = () => {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
-  const [hasLiked, setHasLiked] = useState(false); // Trạng thái kiểm tra đã like hay chưa
+  const [hasLiked, setHasLiked] = useState(false); 
 
   useEffect(() => {
-    const foundMovie = moviesData.find((movie) => movie.id === parseInt(id));
-    if (foundMovie) {
-      foundMovie.views += 0.5; // Tăng lượt xem mỗi lần mở trang
-      setMovie(foundMovie);
-    }
+    const fetchMovieDetail = async () => {
+      try {
+        const foundMovie = await getMovie(id);
+        if (foundMovie) {
+          // Tăng lượt xem (không bắt buộc lưu db ngay nếu không cần thiết, ở đây chỉ update UI hoặc bạn có thể gọi updateMovie)
+          setMovie({ ...foundMovie, views: foundMovie.views + 1 });
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải phim", error);
+      }
+    };
+    fetchMovieDetail();
   }, [id]);
 
   if (!movie) {
